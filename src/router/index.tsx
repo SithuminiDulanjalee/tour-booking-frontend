@@ -53,8 +53,12 @@ const Router = () => {
         }
       >
         <Routes>
+          {/* FIX: redirect root / to /home so navigation after login works */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
+
+          {/* FIX: added /home route - Login navigates here after successful login */}
           <Route
-            path="/"
+            path="/home"
             element={
               // <RequreAuth roles={["ADMIN"]}>
               <RequreAuth>
@@ -62,6 +66,7 @@ const Router = () => {
               </RequreAuth>
             }
           />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

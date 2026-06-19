@@ -1,9 +1,11 @@
 import axios, { AxiosError } from "axios"
 import { refreshTokenCall } from "./auth"
 
-const api = axios.create({ baseURL: "https://rad-73-be-main.vercel.app/api/v1"
-  // baseURL: "http://localhost:5000/api/v1"
- })
+// FIX: switched to localhost for local development (Vercel URL commented out)
+const api = axios.create({
+  // baseURL: "https://rad-73-be-main.vercel.app/api/v1"
+  baseURL: "http://localhost:5000/api/v1"
+})
 
 const PUBLIC_ENDPOINTS = ["/auth/login", "/auth/register", "/auth/refresh"]
 
