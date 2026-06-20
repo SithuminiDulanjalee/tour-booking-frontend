@@ -1,32 +1,36 @@
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState, type ReactNode, type Dispatch, type SetStateAction } from "react"
 import { getMyDetails } from "../service/auth"
 
-export const AuthContext = createContext<any>(null)
+type AuthUser = {
+  id: string
+  name: string
+  email: string
+  roles: string[]
+} | null
 
-export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState(null)
+type AuthContextType = {
+  user: AuthUser
+  setUser: Dispatch<SetStateAction<AuthUser>>
+  loading: boolean
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null)
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<AuthUser>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken")
-    if (token) {
-      setLoading(true)
-      getMyDetails()
-        .then((res) => {
-          if (res.data) setUser(res.data)
-          else setUser(null)
-        })
-        .catch((err) => {
-          console.error(err)
-          setUser(null)
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      setUser(null)
+    if (!token) {
       setLoading(false)
+      return
     }
+
+    getMyDetails()
+      .then((res) => setUser(res.data))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false))
   }, [])
 
   return (
