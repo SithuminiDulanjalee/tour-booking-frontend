@@ -5,6 +5,12 @@ import { useAuth } from "../hooks/useAuth"
 const Login = lazy(() => import("../pages/Login"))
 const Register = lazy(() => import("../pages/Register"))
 const Dashboard = lazy(() => import("../pages/Dashboard"))
+const Tours = lazy(() => import("../pages/Tours"))
+const TourDetail = lazy(() => import("../pages/TourDetail"))
+const MyBookings = lazy(() => import("../pages/MyBookings"))
+const AdminDashboard = lazy(() => import("../pages/AdminDashboard"))
+const AdminTours = lazy(() => import("../pages/AdminTours"))
+const AdminBookings = lazy(() => import("../pages/AdminBookings"))
 
 type ProtectedRouteProps = {
   children: ReactNode
@@ -44,14 +50,53 @@ const Router = () => {
     <BrowserRouter>
       <Suspense fallback={<Spinner />}>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/tours" element={<Tours />} />
+          <Route path="/tours/:id" element={<TourDetail />} />
+
+          {/* User protected routes */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin protected routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/tours"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminTours />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/bookings"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminBookings />
               </ProtectedRoute>
             }
           />

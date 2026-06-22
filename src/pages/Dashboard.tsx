@@ -1,34 +1,234 @@
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
+import { getMyBookings } from "../service/booking"
 
 const Dashboard = () => {
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
+  const navigate = useNavigate()
+  const [bookings, setBookings] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getMyBookings()
+      .then((res) => setBookings(res.data))
+      .catch(() => setBookings([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
+    setUser(null)
+    navigate("/login")
+  }
+
+  const isAdmin = user?.roles?.includes("ADMIN")
+  const confirmed = bookings.filter((b) => b.status === "confirmed").length
+  const pending = bookings.filter((b) => b.status === "pending").length
+  const totalSpent = bookings
+    .filter((b) => b.status !== "cancelled")
+    .reduce((sum, b) => sum + b.totalPrice, 0)
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6 md:p-10">
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-slate-900 to-slate-950 p-8 md:p-10 shadow-2xl">
-          <p className="text-cyan-300 uppercase tracking-[0.25em] text-xs">Dashboard</p>
-          <h1 className="mt-3 text-3xl md:text-5xl font-bold">
-            Welcome{user?.name ? `, ${user.name}` : ""}.
-          </h1>
-          <p className="mt-3 text-slate-300 max-w-2xl">
-            This is a clean starter dashboard for your RAD project. Keep adding modules here later.
-          </p>
+    <div className="min-h-screen bg-slate-950 text-white">
+      {/* Navbar */}
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/90 backdrop-blur px-6 py-4">
+        <div className="mx-auto max-w-6xl flex items-center justify-between">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => navigate("/dashboard")}
+          >
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
+              <span className="text-slate-950 text-xs font-black">VV</span>
+            </div>
+            <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate("/tours")}
+              className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
+            >
+              Browse Tours
+            </button>
+            <button
+              onClick={() => navigate("/my-bookings")}
+              className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
+            >
+              My Bookings
+            </button>
+            {isAdmin && (
+              <button
+                onClick={() => navigate("/admin")}
+                className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300 hover:bg-cyan-500/20 transition"
+              >
+                Admin Panel
+              </button>
+            )}
+            <button
+              onClick={handleLogout}
+              className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2 text-sm text-red-300 hover:bg-red-500/20 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
 
-          <div className="mt-8 grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-slate-400 text-sm">Email</p>
-              <p className="mt-1 font-semibold">{user?.email || "-"}</p>
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        {/* Welcome hero */}
+        <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-8 md:p-12 shadow-2xl mb-8">
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+          <div className="relative flex items-center justify-between flex-wrap gap-6">
+            <div>
+              <p className="text-cyan-400 uppercase tracking-[0.25em] text-xs font-semibold">
+                User Dashboard
+              </p>
+              <h1 className="mt-3 text-3xl md:text-5xl font-bold leading-tight">
+                Welcome back,{" "}
+                <span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                  {user?.name?.split(" ")[0] || "Traveler"}
+                </span>{" "}
+                👋
+              </h1>
+              <p className="mt-2 text-slate-400 text-sm">{user?.email}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-slate-400 text-sm">Role</p>
-              <p className="mt-1 font-semibold">{user?.roles?.join(", ") || "-"}</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-slate-400 text-sm">Theme</p>
-              <p className="mt-1 font-semibold">Green / Blue professional</p>
+            <div className="flex flex-col gap-2 items-end">
+              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-1.5 text-emerald-300 text-xs font-bold uppercase tracking-widest">
+                {user?.roles?.[0] || "USER"}
+              </span>
             </div>
           </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            {
+              label: "Total Bookings",
+              value: loading ? "…" : bookings.length,
+              icon: "🎫",
+              border: "border-cyan-400/20",
+              text: "text-cyan-400"
+            },
+            {
+              label: "Confirmed",
+              value: loading ? "…" : confirmed,
+              icon: "✅",
+              border: "border-emerald-400/20",
+              text: "text-emerald-400"
+            },
+            {
+              label: "Pending",
+              value: loading ? "…" : pending,
+              icon: "⏳",
+              border: "border-yellow-400/20",
+              text: "text-yellow-400"
+            },
+            {
+              label: "Total Spent",
+              value: loading ? "…" : `$${totalSpent.toFixed(0)}`,
+              icon: "💰",
+              border: "border-purple-400/20",
+              text: "text-purple-400"
+            }
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}
+            >
+              <span className="text-2xl">{stat.icon}</span>
+              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
+              <p className="text-slate-400 text-xs mt-1">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Quick actions */}
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          <button
+            onClick={() => navigate("/tours")}
+            className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-7 text-left hover:border-cyan-400/40 hover:from-cyan-500/10 hover:to-emerald-500/10 transition"
+          >
+            <span className="text-4xl">🌍</span>
+            <p className="mt-4 text-lg font-semibold text-cyan-300 group-hover:text-cyan-200">
+              Browse Tour Packages
+            </p>
+            <p className="text-slate-400 text-sm mt-1">
+              Discover and book your next adventure →
+            </p>
+          </button>
+          <button
+            onClick={() => navigate("/my-bookings")}
+            className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-7 text-left hover:border-emerald-400/40 hover:from-emerald-500/10 hover:to-cyan-500/10 transition"
+          >
+            <span className="text-4xl">📋</span>
+            <p className="mt-4 text-lg font-semibold text-emerald-300 group-hover:text-emerald-200">
+              My Bookings
+            </p>
+            <p className="text-slate-400 text-sm mt-1">
+              View and manage your upcoming trips →
+            </p>
+          </button>
+        </div>
+
+        {/* Recent bookings */}
+        <div className="rounded-2xl border border-white/10 bg-slate-900 overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h2 className="font-semibold">Recent Bookings</h2>
+            <button
+              onClick={() => navigate("/my-bookings")}
+              className="text-sm text-cyan-400 hover:text-cyan-300 transition"
+            >
+              View all →
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="text-center py-12 text-slate-400">
+              <p className="text-4xl mb-3">🌏</p>
+              <p className="text-sm">No bookings yet. Start exploring!</p>
+              <button
+                onClick={() => navigate("/tours")}
+                className="mt-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-2 text-sm font-semibold text-slate-950"
+              >
+                Browse Tours
+              </button>
+            </div>
+          ) : (
+            <div className="divide-y divide-white/5">
+              {bookings.slice(0, 5).map((booking: any) => (
+                <div
+                  key={booking._id}
+                  className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition"
+                >
+                  <div>
+                    <p className="font-medium text-sm">{booking.tour?.title || "Tour"}</p>
+                    <p className="text-slate-400 text-xs mt-0.5">
+                      📍 {booking.tour?.location} · {booking.numberOfPeople} person(s) · $
+                      {booking.totalPrice}
+                    </p>
+                  </div>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold border ${
+                      booking.status === "confirmed"
+                        ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
+                        : booking.status === "pending"
+                        ? "bg-yellow-500/10 text-yellow-300 border-yellow-400/20"
+                        : "bg-red-500/10 text-red-300 border-red-400/20"
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
