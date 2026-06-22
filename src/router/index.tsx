@@ -8,9 +8,12 @@ const Dashboard = lazy(() => import("../pages/Dashboard"))
 const Tours = lazy(() => import("../pages/Tours"))
 const TourDetail = lazy(() => import("../pages/TourDetail"))
 const MyBookings = lazy(() => import("../pages/MyBookings"))
+const MyPayments = lazy(() => import("../pages/MyPayments"))
+const Payment = lazy(() => import("../pages/Payment"))
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"))
 const AdminTours = lazy(() => import("../pages/AdminTours"))
 const AdminBookings = lazy(() => import("../pages/AdminBookings"))
+const AdminPayments = lazy(() => import("../pages/AdminPayments"))
 
 type ProtectedRouteProps = {
   children: ReactNode
@@ -28,9 +31,7 @@ const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
     )
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
+  if (!user) return <Navigate to="/login" replace />
 
   if (roles && !roles.some((role) => user.roles.includes(role))) {
     return <Navigate to="/dashboard" replace />
@@ -50,14 +51,14 @@ const Router = () => {
     <BrowserRouter>
       <Suspense fallback={<Spinner />}>
         <Routes>
-          {/* Public routes */}
+          {/* Public */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/tours" element={<Tours />} />
           <Route path="/tours/:id" element={<TourDetail />} />
 
-          {/* User protected routes */}
+          {/* User protected */}
           <Route
             path="/dashboard"
             element={
@@ -74,8 +75,24 @@ const Router = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/my-payments"
+            element={
+              <ProtectedRoute>
+                <MyPayments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/:bookingId"
+            element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Admin protected routes */}
+          {/* Admin protected */}
           <Route
             path="/admin"
             element={
@@ -97,6 +114,14 @@ const Router = () => {
             element={
               <ProtectedRoute roles={["ADMIN"]}>
                 <AdminBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminPayments />
               </ProtectedRoute>
             }
           />

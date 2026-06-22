@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
 import { getAllBookings } from "../service/booking"
+import { getPaymentStats } from "../service/payment"
 import { getAdminTours } from "../service/tour"
 
 const AdminDashboard = () => {
@@ -9,13 +10,15 @@ const AdminDashboard = () => {
   const navigate = useNavigate()
   const [tours, setTours] = useState<any[]>([])
   const [bookings, setBookings] = useState<any[]>([])
+  const [paymentStats, setPaymentStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getAdminTours(), getAllBookings()])
-      .then(([toursRes, bookingsRes]) => {
+    Promise.all([getAdminTours(), getAllBookings(), getPaymentStats()])
+      .then(([toursRes, bookingsRes, statsRes]) => {
         setTours(toursRes.data)
         setBookings(bookingsRes.data)
+        setPaymentStats(statsRes.data)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -29,9 +32,6 @@ const AdminDashboard = () => {
   }
 
   const activeTours = tours.filter((t) => t.isActive).length
-  const totalRevenue = bookings
-    .filter((b) => b.status !== "cancelled")
-    .reduce((sum, b) => sum + b.totalPrice, 0)
   const pendingBookings = bookings.filter((b) => b.status === "pending").length
 
   return (
@@ -62,6 +62,12 @@ const AdminDashboard = () => {
               Bookings
             </button>
             <button
+              onClick={() => navigate("/admin/payments")}
+              className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
+            >
+              Payments
+            </button>
+            <button
               onClick={handleLogout}
               className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2 text-sm text-red-300 hover:bg-red-500/20 transition"
             >
@@ -72,7 +78,7 @@ const AdminDashboard = () => {
       </nav>
 
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header */}
+        {/* Hero */}
         <div className="relative overflow-hidden rounded-[2rem] border border-purple-400/20 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-8 md:p-10 shadow-2xl mb-8">
           <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
           <p className="text-purple-400 uppercase tracking-[0.25em] text-xs font-semibold">
@@ -85,36 +91,41 @@ const AdminDashboard = () => {
             </span>{" "}
             ⚙️
           </h1>
-          <p className="mt-1 text-slate-400 text-sm">Manage tours and bookings from here.</p>
+          <p className="mt-1 text-slate-400 text-sm">
+            Manage tours, bookings, and payments from here.
+          </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Tour & Booking stats */}
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3">
+          Tours & Bookings
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {[
             {
               label: "Total Tours",
-              value: loading ? "…" : tours.length,
+              value: tours.length,
               icon: "🗺",
               border: "border-cyan-400/20",
               text: "text-cyan-400"
             },
             {
               label: "Active Tours",
-              value: loading ? "…" : activeTours,
+              value: activeTours,
               icon: "✅",
               border: "border-emerald-400/20",
               text: "text-emerald-400"
             },
             {
               label: "Total Bookings",
-              value: loading ? "…" : bookings.length,
+              value: bookings.length,
               icon: "🎫",
               border: "border-purple-400/20",
               text: "text-purple-400"
             },
             {
               label: "Pending",
-              value: loading ? "…" : pendingBookings,
+              value: pendingBookings,
               icon: "⏳",
               border: "border-yellow-400/20",
               text: "text-yellow-400"
@@ -125,31 +136,71 @@ const AdminDashboard = () => {
               className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}
             >
               <span className="text-2xl">{stat.icon}</span>
-              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
+              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>
+                {loading ? "…" : stat.value}
+              </p>
               <p className="text-slate-400 text-xs mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Revenue card */}
-        <div className="rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 p-6 mb-8">
-          <p className="text-slate-400 text-sm">Total Revenue (non-cancelled)</p>
-          <p className="text-4xl font-bold text-emerald-400 mt-2">
-            ${loading ? "…" : totalRevenue.toFixed(2)}
-          </p>
+        {/* Payment stats */}
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3 mt-6">
+          Payment Overview
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            {
+              label: "Total Revenue",
+              value: paymentStats ? `$${paymentStats.totalRevenue.toFixed(2)}` : "…",
+              icon: "💰",
+              border: "border-emerald-400/20",
+              text: "text-emerald-400"
+            },
+            {
+              label: "Transactions",
+              value: paymentStats?.totalTransactions ?? "…",
+              icon: "🔄",
+              border: "border-cyan-400/20",
+              text: "text-cyan-400"
+            },
+            {
+              label: "Completed",
+              value: paymentStats?.completedCount ?? "…",
+              icon: "✅",
+              border: "border-emerald-400/20",
+              text: "text-emerald-400"
+            },
+            {
+              label: "Refunded",
+              value: paymentStats ? `$${paymentStats.refundedAmount.toFixed(2)}` : "…",
+              icon: "↩️",
+              border: "border-orange-400/20",
+              text: "text-orange-400"
+            }
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}
+            >
+              <span className="text-2xl">{stat.icon}</span>
+              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>
+                {loading ? "…" : stat.value}
+              </p>
+              <p className="text-slate-400 text-xs mt-1">{stat.label}</p>
+            </div>
+          ))}
         </div>
 
         {/* Quick actions */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <button
             onClick={() => navigate("/admin/tours")}
             className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-7 text-left hover:border-cyan-400/40 transition"
           >
             <span className="text-4xl">🗺</span>
-            <p className="mt-4 text-lg font-semibold text-cyan-300">Manage Tour Packages</p>
-            <p className="text-slate-400 text-sm mt-1">
-              Create, edit, and delete tour listings →
-            </p>
+            <p className="mt-4 text-lg font-semibold text-cyan-300">Manage Tours</p>
+            <p className="text-slate-400 text-sm mt-1">Create, edit, delete tours →</p>
           </button>
           <button
             onClick={() => navigate("/admin/bookings")}
@@ -157,9 +208,15 @@ const AdminDashboard = () => {
           >
             <span className="text-4xl">📋</span>
             <p className="mt-4 text-lg font-semibold text-purple-300">Manage Bookings</p>
-            <p className="text-slate-400 text-sm mt-1">
-              View and update booking statuses →
-            </p>
+            <p className="text-slate-400 text-sm mt-1">Update booking statuses →</p>
+          </button>
+          <button
+            onClick={() => navigate("/admin/payments")}
+            className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-7 text-left hover:border-emerald-400/40 transition"
+          >
+            <span className="text-4xl">💰</span>
+            <p className="mt-4 text-lg font-semibold text-emerald-300">Manage Payments</p>
+            <p className="text-slate-400 text-sm mt-1">Track revenue & refunds →</p>
           </button>
         </div>
       </div>

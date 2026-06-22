@@ -2,17 +2,22 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
 import { getMyBookings } from "../service/booking"
+import { getMyPayments } from "../service/payment"
 
 const Dashboard = () => {
   const { user, setUser } = useAuth()
   const navigate = useNavigate()
   const [bookings, setBookings] = useState<any[]>([])
+  const [payments, setPayments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getMyBookings()
-      .then((res) => setBookings(res.data))
-      .catch(() => setBookings([]))
+    Promise.all([getMyBookings(), getMyPayments()])
+      .then(([bookingsRes, paymentsRes]) => {
+        setBookings(bookingsRes.data)
+        setPayments(paymentsRes.data)
+      })
+      .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
@@ -24,11 +29,19 @@ const Dashboard = () => {
   }
 
   const isAdmin = user?.roles?.includes("ADMIN")
+
   const confirmed = bookings.filter((b) => b.status === "confirmed").length
   const pending = bookings.filter((b) => b.status === "pending").length
-  const totalSpent = bookings
+
+  const totalPaid = payments
+    .filter((p) => p.status === "completed")
+    .reduce((sum, p) => sum + p.amount, 0)
+
+  const totalBookingCost = bookings
     .filter((b) => b.status !== "cancelled")
     .reduce((sum, b) => sum + b.totalPrice, 0)
+
+  const outstanding = Math.max(0, totalBookingCost - totalPaid)
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -56,6 +69,12 @@ const Dashboard = () => {
               className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
             >
               My Bookings
+            </button>
+            <button
+              onClick={() => navigate("/my-payments")}
+              className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
+            >
+              Payments
             </button>
             {isAdmin && (
               <button
@@ -94,44 +113,45 @@ const Dashboard = () => {
               </h1>
               <p className="mt-2 text-slate-400 text-sm">{user?.email}</p>
             </div>
-            <div className="flex flex-col gap-2 items-end">
-              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-1.5 text-emerald-300 text-xs font-bold uppercase tracking-widest">
-                {user?.roles?.[0] || "USER"}
-              </span>
-            </div>
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-1.5 text-emerald-300 text-xs font-bold uppercase tracking-widest">
+              {user?.roles?.[0] || "USER"}
+            </span>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Booking stats */}
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3">
+          Booking Overview
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {[
             {
               label: "Total Bookings",
-              value: loading ? "…" : bookings.length,
+              value: bookings.length,
               icon: "🎫",
               border: "border-cyan-400/20",
               text: "text-cyan-400"
             },
             {
               label: "Confirmed",
-              value: loading ? "…" : confirmed,
+              value: confirmed,
               icon: "✅",
               border: "border-emerald-400/20",
               text: "text-emerald-400"
             },
             {
               label: "Pending",
-              value: loading ? "…" : pending,
+              value: pending,
               icon: "⏳",
               border: "border-yellow-400/20",
               text: "text-yellow-400"
             },
             {
-              label: "Total Spent",
-              value: loading ? "…" : `$${totalSpent.toFixed(0)}`,
-              icon: "💰",
-              border: "border-purple-400/20",
-              text: "text-purple-400"
+              label: "Total Cost",
+              value: `$${totalBookingCost.toFixed(0)}`,
+              icon: "🗓",
+              border: "border-slate-600/50",
+              text: "text-slate-300"
             }
           ].map((stat) => (
             <div
@@ -139,37 +159,68 @@ const Dashboard = () => {
               className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}
             >
               <span className="text-2xl">{stat.icon}</span>
-              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
+              <p className={`mt-3 text-3xl font-bold ${stat.text}`}>
+                {loading ? "…" : stat.value}
+              </p>
               <p className="text-slate-400 text-xs mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
 
+        {/* Payment stats */}
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3 mt-6">
+          Payment Overview
+        </p>
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="rounded-2xl border border-emerald-400/20 bg-slate-900 p-5">
+            <span className="text-2xl">💰</span>
+            <p className="mt-3 text-3xl font-bold text-emerald-400">
+              {loading ? "…" : `$${totalPaid.toFixed(2)}`}
+            </p>
+            <p className="text-slate-400 text-xs mt-1">Total Paid</p>
+          </div>
+          <div
+            className={`rounded-2xl border bg-slate-900 p-5 ${
+              outstanding > 0 ? "border-red-400/20" : "border-emerald-400/20"
+            }`}
+          >
+            <span className="text-2xl">{outstanding > 0 ? "⚠️" : "✅"}</span>
+            <p
+              className={`mt-3 text-3xl font-bold ${
+                outstanding > 0 ? "text-red-400" : "text-emerald-400"
+              }`}
+            >
+              {loading ? "…" : `$${outstanding.toFixed(2)}`}
+            </p>
+            <p className="text-slate-400 text-xs mt-1">Outstanding Balance</p>
+          </div>
+        </div>
+
         {/* Quick actions */}
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
           <button
             onClick={() => navigate("/tours")}
-            className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-7 text-left hover:border-cyan-400/40 hover:from-cyan-500/10 hover:to-emerald-500/10 transition"
+            className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-6 text-left hover:border-cyan-400/40 transition"
           >
-            <span className="text-4xl">🌍</span>
-            <p className="mt-4 text-lg font-semibold text-cyan-300 group-hover:text-cyan-200">
-              Browse Tour Packages
-            </p>
-            <p className="text-slate-400 text-sm mt-1">
-              Discover and book your next adventure →
-            </p>
+            <span className="text-3xl">🌍</span>
+            <p className="mt-3 font-semibold text-cyan-300">Browse Tours</p>
+            <p className="text-slate-400 text-xs mt-1">Explore adventures →</p>
           </button>
           <button
             onClick={() => navigate("/my-bookings")}
-            className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-7 text-left hover:border-emerald-400/40 hover:from-emerald-500/10 hover:to-cyan-500/10 transition"
+            className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-6 text-left hover:border-emerald-400/40 transition"
           >
-            <span className="text-4xl">📋</span>
-            <p className="mt-4 text-lg font-semibold text-emerald-300 group-hover:text-emerald-200">
-              My Bookings
-            </p>
-            <p className="text-slate-400 text-sm mt-1">
-              View and manage your upcoming trips →
-            </p>
+            <span className="text-3xl">📋</span>
+            <p className="mt-3 font-semibold text-emerald-300">My Bookings</p>
+            <p className="text-slate-400 text-xs mt-1">Manage your trips →</p>
+          </button>
+          <button
+            onClick={() => navigate("/my-payments")}
+            className="group rounded-2xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 p-6 text-left hover:border-purple-400/40 transition"
+          >
+            <span className="text-3xl">💳</span>
+            <p className="mt-3 font-semibold text-purple-300">Payments</p>
+            <p className="text-slate-400 text-xs mt-1">View payment history →</p>
           </button>
         </div>
 
@@ -184,18 +235,17 @@ const Dashboard = () => {
               View all →
             </button>
           </div>
-
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
             </div>
           ) : bookings.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
-              <p className="text-4xl mb-3">🌏</p>
-              <p className="text-sm">No bookings yet. Start exploring!</p>
+              <p className="text-3xl mb-2">🌏</p>
+              <p className="text-sm">No bookings yet.</p>
               <button
                 onClick={() => navigate("/tours")}
-                className="mt-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-2 text-sm font-semibold text-slate-950"
+                className="mt-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-5 py-2 text-sm font-semibold text-slate-950"
               >
                 Browse Tours
               </button>
@@ -208,23 +258,35 @@ const Dashboard = () => {
                   className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition"
                 >
                   <div>
-                    <p className="font-medium text-sm">{booking.tour?.title || "Tour"}</p>
+                    <p className="font-medium text-sm">
+                      {booking.tour?.title || "Tour"}
+                    </p>
                     <p className="text-slate-400 text-xs mt-0.5">
                       📍 {booking.tour?.location} · {booking.numberOfPeople} person(s) · $
                       {booking.totalPrice}
                     </p>
                   </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold border ${
-                      booking.status === "confirmed"
-                        ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
-                        : booking.status === "pending"
-                        ? "bg-yellow-500/10 text-yellow-300 border-yellow-400/20"
-                        : "bg-red-500/10 text-red-300 border-red-400/20"
-                    }`}
-                  >
-                    {booking.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold border ${
+                        booking.status === "confirmed"
+                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
+                          : booking.status === "pending"
+                          ? "bg-yellow-500/10 text-yellow-300 border-yellow-400/20"
+                          : "bg-red-500/10 text-red-300 border-red-400/20"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                    {booking.status !== "cancelled" && (
+                      <button
+                        onClick={() => navigate(`/payment/${booking._id}`)}
+                        className="rounded-lg bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs px-3 py-1 hover:bg-cyan-500/20 transition"
+                      >
+                        Pay
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
