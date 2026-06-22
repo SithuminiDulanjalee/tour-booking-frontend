@@ -29,18 +29,14 @@ const Dashboard = () => {
   }
 
   const isAdmin = user?.roles?.includes("ADMIN")
-
   const confirmed = bookings.filter((b) => b.status === "confirmed").length
   const pending = bookings.filter((b) => b.status === "pending").length
-
   const totalPaid = payments
     .filter((p) => p.status === "completed")
     .reduce((sum, p) => sum + p.amount, 0)
-
   const totalBookingCost = bookings
     .filter((b) => b.status !== "cancelled")
     .reduce((sum, b) => sum + b.totalPrice, 0)
-
   const outstanding = Math.max(0, totalBookingCost - totalPaid)
 
   return (
@@ -62,13 +58,13 @@ const Dashboard = () => {
               onClick={() => navigate("/tours")}
               className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
             >
-              Browse Tours
+              Tours
             </button>
             <button
               onClick={() => navigate("/my-bookings")}
               className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
             >
-              My Bookings
+              Bookings
             </button>
             <button
               onClick={() => navigate("/my-payments")}
@@ -76,17 +72,24 @@ const Dashboard = () => {
             >
               Payments
             </button>
+            <button
+              onClick={() => navigate("/ai-recommendation")}
+              className="flex items-center gap-1.5 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300 hover:bg-emerald-500/20 transition"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              AI
+            </button>
             {isAdmin && (
               <button
                 onClick={() => navigate("/admin")}
-                className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300 hover:bg-cyan-500/20 transition"
+                className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-300 hover:bg-cyan-500/20 transition"
               >
-                Admin Panel
+                Admin
               </button>
             )}
             <button
               onClick={handleLogout}
-              className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2 text-sm text-red-300 hover:bg-red-500/20 transition"
+              className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 hover:bg-red-500/20 transition"
             >
               Logout
             </button>
@@ -123,41 +126,14 @@ const Dashboard = () => {
         <p className="text-slate-400 text-xs uppercase tracking-wider mb-3">
           Booking Overview
         </p>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
           {[
-            {
-              label: "Total Bookings",
-              value: bookings.length,
-              icon: "🎫",
-              border: "border-cyan-400/20",
-              text: "text-cyan-400"
-            },
-            {
-              label: "Confirmed",
-              value: confirmed,
-              icon: "✅",
-              border: "border-emerald-400/20",
-              text: "text-emerald-400"
-            },
-            {
-              label: "Pending",
-              value: pending,
-              icon: "⏳",
-              border: "border-yellow-400/20",
-              text: "text-yellow-400"
-            },
-            {
-              label: "Total Cost",
-              value: `$${totalBookingCost.toFixed(0)}`,
-              icon: "🗓",
-              border: "border-slate-600/50",
-              text: "text-slate-300"
-            }
+            { label: "Total Bookings", value: bookings.length, icon: "🎫", border: "border-cyan-400/20", text: "text-cyan-400" },
+            { label: "Confirmed", value: confirmed, icon: "✅", border: "border-emerald-400/20", text: "text-emerald-400" },
+            { label: "Pending", value: pending, icon: "⏳", border: "border-yellow-400/20", text: "text-yellow-400" },
+            { label: "Total Cost", value: `$${totalBookingCost.toFixed(0)}`, icon: "🗓", border: "border-slate-600/50", text: "text-slate-300" }
           ].map((stat) => (
-            <div
-              key={stat.label}
-              className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}
-            >
+            <div key={stat.label} className={`rounded-2xl border ${stat.border} bg-slate-900 p-5`}>
               <span className="text-2xl">{stat.icon}</span>
               <p className={`mt-3 text-3xl font-bold ${stat.text}`}>
                 {loading ? "…" : stat.value}
@@ -168,7 +144,7 @@ const Dashboard = () => {
         </div>
 
         {/* Payment stats */}
-        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3 mt-6">
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-3">
           Payment Overview
         </p>
         <div className="grid grid-cols-2 gap-4 mb-8">
@@ -179,25 +155,17 @@ const Dashboard = () => {
             </p>
             <p className="text-slate-400 text-xs mt-1">Total Paid</p>
           </div>
-          <div
-            className={`rounded-2xl border bg-slate-900 p-5 ${
-              outstanding > 0 ? "border-red-400/20" : "border-emerald-400/20"
-            }`}
-          >
+          <div className={`rounded-2xl border bg-slate-900 p-5 ${outstanding > 0 ? "border-red-400/20" : "border-emerald-400/20"}`}>
             <span className="text-2xl">{outstanding > 0 ? "⚠️" : "✅"}</span>
-            <p
-              className={`mt-3 text-3xl font-bold ${
-                outstanding > 0 ? "text-red-400" : "text-emerald-400"
-              }`}
-            >
+            <p className={`mt-3 text-3xl font-bold ${outstanding > 0 ? "text-red-400" : "text-emerald-400"}`}>
               {loading ? "…" : `$${outstanding.toFixed(2)}`}
             </p>
             <p className="text-slate-400 text-xs mt-1">Outstanding Balance</p>
           </div>
         </div>
 
-        {/* Quick actions */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
+        {/* Quick actions — 4 cards including AI */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <button
             onClick={() => navigate("/tours")}
             className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-6 text-left hover:border-cyan-400/40 transition"
@@ -212,7 +180,7 @@ const Dashboard = () => {
           >
             <span className="text-3xl">📋</span>
             <p className="mt-3 font-semibold text-emerald-300">My Bookings</p>
-            <p className="text-slate-400 text-xs mt-1">Manage your trips →</p>
+            <p className="text-slate-400 text-xs mt-1">Manage trips →</p>
           </button>
           <button
             onClick={() => navigate("/my-payments")}
@@ -220,7 +188,19 @@ const Dashboard = () => {
           >
             <span className="text-3xl">💳</span>
             <p className="mt-3 font-semibold text-purple-300">Payments</p>
-            <p className="text-slate-400 text-xs mt-1">View payment history →</p>
+            <p className="text-slate-400 text-xs mt-1">View history →</p>
+          </button>
+          <button
+            onClick={() => navigate("/ai-recommendation")}
+            className="group relative overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 p-6 text-left hover:border-emerald-400/50 transition"
+          >
+            <span className="absolute top-3 right-3 flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-emerald-400 text-xs">Live</span>
+            </span>
+            <span className="text-3xl">🤖</span>
+            <p className="mt-3 font-semibold text-emerald-300">AI Assistant</p>
+            <p className="text-slate-400 text-xs mt-1">Get recommendations →</p>
           </button>
         </div>
 
@@ -258,24 +238,20 @@ const Dashboard = () => {
                   className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition"
                 >
                   <div>
-                    <p className="font-medium text-sm">
-                      {booking.tour?.title || "Tour"}
-                    </p>
+                    <p className="font-medium text-sm">{booking.tour?.title || "Tour"}</p>
                     <p className="text-slate-400 text-xs mt-0.5">
                       📍 {booking.tour?.location} · {booking.numberOfPeople} person(s) · $
                       {booking.totalPrice}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold border ${
-                        booking.status === "confirmed"
-                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
-                          : booking.status === "pending"
-                          ? "bg-yellow-500/10 text-yellow-300 border-yellow-400/20"
-                          : "bg-red-500/10 text-red-300 border-red-400/20"
-                      }`}
-                    >
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold border ${
+                      booking.status === "confirmed"
+                        ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
+                        : booking.status === "pending"
+                        ? "bg-yellow-500/10 text-yellow-300 border-yellow-400/20"
+                        : "bg-red-500/10 text-red-300 border-red-400/20"
+                    }`}>
                       {booking.status}
                     </span>
                     {booking.status !== "cancelled" && (
