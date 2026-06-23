@@ -124,7 +124,7 @@ const AdminTours = () => {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
                 <span className="text-slate-950 text-xs font-black">VV</span>
               </div>
-              <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+              <span className="font-bold text-lg tracking-tight">VoyaLink</span>
             </div>
             <span className="rounded-full bg-purple-500/10 border border-purple-400/30 text-purple-300 text-xs px-3 py-1">
               Admin
@@ -188,7 +188,7 @@ const AdminTours = () => {
                       <p className="text-slate-400 text-xs">{tour.category}</p>
                     </td>
                     <td className="px-6 py-4 text-slate-400">{tour.location}</td>
-                    <td className="px-6 py-4 text-cyan-400 font-semibold">${tour.price}</td>
+                    <td className="px-6 py-4 text-cyan-400 font-semibold">LKR {tour.price}</td>
                     <td className="px-6 py-4 text-slate-400">{tour.availableSlots}</td>
                     <td className="px-6 py-4">
                       <span
@@ -242,7 +242,7 @@ const AdminTours = () => {
               {[
                 { label: "Title *", key: "title", type: "text" },
                 { label: "Location *", key: "location", type: "text" },
-                { label: "Price (USD) *", key: "price", type: "number" },
+                { label: "Price (LKR) *", key: "price", type: "float" },
                 { label: "Duration (days) *", key: "duration", type: "number" },
                 { label: "Max Group Size *", key: "maxGroupSize", type: "number" },
                 { label: "Available Slots *", key: "availableSlots", type: "number" },

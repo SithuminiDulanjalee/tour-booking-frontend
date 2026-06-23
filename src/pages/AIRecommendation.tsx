@@ -27,7 +27,7 @@ const AIRecommendation = () => {
     {
       role: "assistant",
       content:
-        "Hi! I'm your VoyageVerde AI travel assistant 🌍\n\nTell me what kind of trip you're dreaming of — your budget, interests, travel dates, or group size — and I'll find the perfect tour for you!"
+        "Hi! I'm your VoyaLink AI travel assistant 🌍\n\nTell me what kind of trip you're dreaming of — your budget, interests, travel dates, or group size — and I'll find the perfect tour for you!"
     }
   ])
   const [input, setInput] = useState("")
@@ -98,7 +98,7 @@ const AIRecommendation = () => {
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
               <span className="text-slate-950 text-xs font-black">VV</span>
             </div>
-            <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+            <span className="font-bold text-lg tracking-tight">VoyaLink</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -253,7 +253,7 @@ const AIRecommendation = () => {
         </div>
 
         <p className="text-center text-slate-600 text-xs mt-3">
-          AI recommendations are based on available VoyageVerde tours · Powered by Groq
+          AI recommendations are based on available VoyaLink tours · Powered by Groq
         </p>
       </div>
     </div>

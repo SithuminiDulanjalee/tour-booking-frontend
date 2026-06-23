@@ -50,7 +50,7 @@ const Tours = () => {
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
               <span className="text-slate-950 text-xs font-black">VV</span>
             </div>
-            <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+            <span className="font-bold text-lg tracking-tight">VoyaLink</span>
           </div>
           <div className="flex items-center gap-2">
             {user ? (
@@ -157,7 +157,7 @@ const Tours = () => {
                     <span className="rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 text-xs px-3 py-1 font-medium">
                       {tour.category}
                     </span>
-                    <span className="text-cyan-400 font-bold text-lg">${tour.price}</span>
+                    <span className="text-cyan-400 font-bold text-lg">LKR {tour.price}</span>
                   </div>
                   <h3 className="font-semibold text-base mt-1">{tour.title}</h3>
                   <p className="text-slate-400 text-xs mt-1">📍 {tour.location}</p>

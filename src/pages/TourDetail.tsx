@@ -94,7 +94,7 @@ const TourDetail = () => {
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
               <span className="text-slate-950 text-xs font-black">VV</span>
             </div>
-            <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+            <span className="font-bold text-lg tracking-tight">VoyaLink</span>
           </div>
           <button
             onClick={() => navigate("/tours")}
@@ -174,7 +174,7 @@ const TourDetail = () => {
             <div className="sticky top-24 rounded-2xl border border-cyan-400/20 bg-slate-900 p-6 shadow-2xl">
               <div className="flex items-baseline justify-between mb-6">
                 <div>
-                  <p className="text-3xl font-bold text-cyan-400">${tour.price}</p>
+                  <p className="text-3xl font-bold text-cyan-400">LKR {tour.price}</p>
                   <p className="text-slate-400 text-xs">per person</p>
                 </div>
               </div>
@@ -240,9 +240,9 @@ const TourDetail = () => {
                   <div className="mt-5 rounded-xl bg-slate-800 border border-white/10 p-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-400">
-                        ${tour.price} × {numberOfPeople}
+                        LKR {tour.price} × {numberOfPeople}
                       </span>
-                      <span className="font-semibold text-cyan-400">${totalPrice}</span>
+                      <span className="font-semibold text-cyan-400">LKR {totalPrice}</span>
                     </div>
                   </div>
 

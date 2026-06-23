@@ -31,7 +31,7 @@ const AdminAI = () => {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
                 <span className="text-slate-950 text-xs font-black">VV</span>
               </div>
-              <span className="font-bold text-lg tracking-tight">VoyageVerde</span>
+              <span className="font-bold text-lg tracking-tight">VoyaLink</span>
             </div>
             <span className="rounded-full bg-purple-500/10 border border-purple-400/30 text-purple-300 text-xs px-3 py-1 font-semibold">
               Admin
