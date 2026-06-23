@@ -15,6 +15,7 @@ const AdminDashboard = lazy(() => import("../pages/AdminDashboard"))
 const AdminTours = lazy(() => import("../pages/AdminTours"))
 const AdminBookings = lazy(() => import("../pages/AdminBookings"))
 const AdminPayments = lazy(() => import("../pages/AdminPayments"))
+const Home = lazy(() => import("../pages/Home"))
 
 type ProtectedRouteProps = {
   children: ReactNode
@@ -53,11 +54,11 @@ const Router = () => {
       <Suspense fallback={<Spinner />}>
         <Routes>
           {/* Public */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/tours" element={<Tours />} />
-          <Route path="/tours/:id" element={<TourDetail />} />
+<Route path="/" element={<Home />} />
+<Route path="/login" element={<Login />} />
+<Route path="/register" element={<Register />} />
+<Route path="/tours" element={<Tours />} />
+<Route path="/tours/:id" element={<TourDetail />} />
 
           {/* User protected */}
           <Route
