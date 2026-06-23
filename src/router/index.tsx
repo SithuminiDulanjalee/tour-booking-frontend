@@ -10,12 +10,11 @@ const TourDetail = lazy(() => import("../pages/TourDetail"))
 const MyBookings = lazy(() => import("../pages/MyBookings"))
 const MyPayments = lazy(() => import("../pages/MyPayments"))
 const Payment = lazy(() => import("../pages/Payment"))
-const AIRecommendation = lazy(() => import("../pages/AIRecommendation"))
+const AIChat = lazy(() => import("../pages/AIChat"))
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"))
 const AdminTours = lazy(() => import("../pages/AdminTours"))
 const AdminBookings = lazy(() => import("../pages/AdminBookings"))
 const AdminPayments = lazy(() => import("../pages/AdminPayments"))
-const AdminAI = lazy(() => import("../pages/AdminAI"))
 
 type ProtectedRouteProps = {
   children: ReactNode
@@ -61,18 +60,81 @@ const Router = () => {
           <Route path="/tours/:id" element={<TourDetail />} />
 
           {/* User protected */}
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
-          <Route path="/my-payments" element={<ProtectedRoute><MyPayments /></ProtectedRoute>} />
-          <Route path="/payment/:bookingId" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
-          <Route path="/ai-recommendation" element={<ProtectedRoute><AIRecommendation /></ProtectedRoute>} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-payments"
+            element={
+              <ProtectedRoute>
+                <MyPayments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/:bookingId"
+            element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
+          {/* AI Chat — USER role only */}
+          <Route
+            path="/ai"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <AIChat />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Admin protected */}
-          <Route path="/admin" element={<ProtectedRoute roles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/tours" element={<ProtectedRoute roles={["ADMIN"]}><AdminTours /></ProtectedRoute>} />
-          <Route path="/admin/bookings" element={<ProtectedRoute roles={["ADMIN"]}><AdminBookings /></ProtectedRoute>} />
-          <Route path="/admin/payments" element={<ProtectedRoute roles={["ADMIN"]}><AdminPayments /></ProtectedRoute>} />
-          <Route path="/admin/ai" element={<ProtectedRoute roles={["ADMIN"]}><AdminAI /></ProtectedRoute>} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/tours"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminTours />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/bookings"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminPayments />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Suspense>
     </BrowserRouter>

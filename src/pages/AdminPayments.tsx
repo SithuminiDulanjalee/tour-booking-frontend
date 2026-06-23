@@ -46,7 +46,7 @@ const AdminPayments = () => {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/admin")}>
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
-                <span className="text-slate-950 text-xs font-black">VV</span>
+                <span className="text-slate-950 text-xs font-black">VL</span>
               </div>
               <span className="font-bold text-lg tracking-tight">VoyaLink</span>
             </div>

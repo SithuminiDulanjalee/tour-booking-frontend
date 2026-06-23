@@ -57,7 +57,7 @@ const Dashboard = () => {
             onClick={() => navigate("/dashboard")}
           >
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
-              <span className="text-slate-950 text-xs font-black">VV</span>
+              <span className="text-slate-950 text-xs font-black">VL</span>
             </div>
             <span className="font-bold text-lg tracking-tight">VoyaLink</span>
           </div>
@@ -65,6 +65,12 @@ const Dashboard = () => {
             <button onClick={() => navigate("/tours")} className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition">Browse Tours</button>
             <button onClick={() => navigate("/my-bookings")} className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition">My Bookings</button>
             <button onClick={() => navigate("/my-payments")} className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition">Payments</button>
+            <button
+  onClick={() => navigate("/ai")}
+  className="text-slate-300 hover:text-white text-sm px-3 py-2 rounded-xl hover:bg-white/5 transition"
+>
+  🤖 AI Guide
+</button>
             {isAdmin && (
               <button onClick={() => navigate("/admin")} className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300 hover:bg-cyan-500/20 transition">Admin Panel</button>
             )}
@@ -130,23 +136,40 @@ const Dashboard = () => {
         </div>
 
         {/* Quick actions */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <button onClick={() => navigate("/tours")} className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-6 text-left hover:border-cyan-400/40 transition">
-            <span className="text-3xl">🌍</span>
-            <p className="mt-3 font-semibold text-cyan-300">Browse Tours</p>
-            <p className="text-slate-400 text-xs mt-1">Find your next adventure →</p>
-          </button>
-          <button onClick={() => navigate("/my-bookings")} className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-6 text-left hover:border-emerald-400/40 transition">
-            <span className="text-3xl">📋</span>
-            <p className="mt-3 font-semibold text-emerald-300">My Bookings</p>
-            <p className="text-slate-400 text-xs mt-1">Pay advance & balance →</p>
-          </button>
-          <button onClick={() => navigate("/my-payments")} className="group rounded-2xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 p-6 text-left hover:border-purple-400/40 transition">
-            <span className="text-3xl">💳</span>
-            <p className="mt-3 font-semibold text-purple-300">Payment History</p>
-            <p className="text-slate-400 text-xs mt-1">LKR transactions →</p>
-          </button>
-        </div>
+<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <button
+    onClick={() => navigate("/tours")}
+    className="group rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 p-6 text-left hover:border-cyan-400/40 transition"
+  >
+    <span className="text-3xl">🌍</span>
+    <p className="mt-3 font-semibold text-cyan-300">Browse Tours</p>
+    <p className="text-slate-400 text-xs mt-1">Find your next adventure →</p>
+  </button>
+  <button
+    onClick={() => navigate("/my-bookings")}
+    className="group rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-6 text-left hover:border-emerald-400/40 transition"
+  >
+    <span className="text-3xl">📋</span>
+    <p className="mt-3 font-semibold text-emerald-300">My Bookings</p>
+    <p className="text-slate-400 text-xs mt-1">Pay advance & balance →</p>
+  </button>
+  <button
+    onClick={() => navigate("/my-payments")}
+    className="group rounded-2xl border border-purple-400/20 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 p-6 text-left hover:border-purple-400/40 transition"
+  >
+    <span className="text-3xl">💳</span>
+    <p className="mt-3 font-semibold text-purple-300">Payment History</p>
+    <p className="text-slate-400 text-xs mt-1">LKR transactions →</p>
+  </button>
+  <button
+    onClick={() => navigate("/ai")}
+    className="group rounded-2xl border border-pink-400/20 bg-gradient-to-br from-pink-500/5 to-purple-500/5 p-6 text-left hover:border-pink-400/40 transition"
+  >
+    <span className="text-3xl">🤖</span>
+    <p className="mt-3 font-semibold text-pink-300">AI Travel Guide</p>
+    <p className="text-slate-400 text-xs mt-1">Ask anything about Sri Lanka →</p>
+  </button>
+</div>
 
         {/* Recent bookings */}
         <div className="rounded-2xl border border-white/10 bg-slate-900 overflow-hidden">

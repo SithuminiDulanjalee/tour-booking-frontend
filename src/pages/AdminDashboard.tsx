@@ -47,7 +47,7 @@ const AdminDashboard = () => {
         <div className="mx-auto max-w-6xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-400 flex items-center justify-center">
-              <span className="text-slate-950 text-xs font-black">VV</span>
+              <span className="text-slate-950 text-xs font-black">VL</span>
             </div>
             <span className="font-bold text-lg tracking-tight">VoyaLink</span>
             <span className="rounded-full bg-purple-500/10 border border-purple-400/30 text-purple-300 text-xs px-3 py-1 font-semibold">Admin</span>
