@@ -73,7 +73,7 @@ const AdminDashboard = () => {
             </span>{" "}⚙️
           </h1>
           <p className="mt-1 text-slate-400 text-sm">
-            Manage tours, bookings, and payments · All amounts in LKR
+            Manage tours, bookings and payments · All amounts in LKR
           </p>
           {/* Action needed alert */}
           {!loading && awaitingConfirm > 0 && (
