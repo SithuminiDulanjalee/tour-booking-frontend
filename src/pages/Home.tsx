@@ -223,7 +223,7 @@ const Home = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {DESTINATIONS.map((dest, i) => (
+            {DESTINATIONS.map((dest) => (
               <div
                 key={dest.name}
                 onClick={() => navigate("/register")}
