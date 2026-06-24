@@ -168,7 +168,6 @@ const MyBookings = () => {
                 booking.totalPrice > 0
                   ? Math.round(((booking.advanceAmount ?? Math.round(booking.totalPrice * 0.3)) / booking.totalPrice) * 100)
                   : 30
-              const balancePct = 100 - advancePct
               const progressPct =
                 booking.paymentStage === "fully_paid"
                   ? 100

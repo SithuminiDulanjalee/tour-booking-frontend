@@ -35,7 +35,6 @@ const AdminDashboard = () => {
   }
 
   const activeTours = tours.filter((t) => t.isActive).length
-  const pendingBookings = bookings.filter((b) => b.status === "pending").length
   // Bookings with advance paid but not yet confirmed — admin action needed
   const awaitingConfirm = bookings.filter(
     (b) => b.paymentStage === "advance_paid" && b.status === "pending"
