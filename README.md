@@ -95,6 +95,7 @@ A modern Sri Lanka tour booking platform built with React, TypeScript and Tailwi
 ---
 
 ## Project Structure
+```
 src/
 ├── components/
 │   ├── UserNavbar.tsx       # Responsive navbar for user pages
@@ -130,6 +131,7 @@ src/
 ├── App.tsx
 ├── main.tsx
 └── index.css
+```
 ---
 
 ## Setup & Run
