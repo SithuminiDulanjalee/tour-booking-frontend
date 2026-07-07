@@ -29,26 +29,12 @@ const TourDetail = () => {
   const totalPrice = tour ? tour.price * numberOfPeople : 0
 
   const handleBooking = async () => {
-    if (!user) {
-      navigate("/login")
-      return
-    }
-
-    if (!bookingDate) {
-      setError("Please select a booking date.")
-      return
-    }
-
+    if (!user) { navigate("/login"); return }
+    if (!bookingDate) { setError("Please select a booking date."); return }
     setError("")
     setBookingLoading(true)
-
     try {
-      await createBooking({
-        tourId: id!,
-        bookingDate,
-        numberOfPeople,
-        specialRequests
-      })
+      await createBooking({ tourId: id!, bookingDate, numberOfPeople, specialRequests })
       setBookingSuccess(true)
     } catch (err: any) {
       setError(err?.response?.data?.message || "Booking failed. Please try again.")
@@ -67,7 +53,7 @@ const TourDetail = () => {
 
   if (!tour) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-4xl mb-3">😕</p>
           <p className="text-slate-400">Tour not found.</p>
@@ -84,8 +70,8 @@ const TourDetail = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/90 backdrop-blur px-6 py-4">
+      {/* Minimal nav */}
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/90 backdrop-blur px-4 md:px-6 py-4">
         <div className="mx-auto max-w-6xl flex items-center justify-between">
           <div
             className="flex items-center gap-2 cursor-pointer"
@@ -105,24 +91,24 @@ const TourDetail = () => {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-6xl px-4 md:px-6 py-8 md:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Left: Tour info */}
           <div className="lg:col-span-2">
             {tour.image ? (
               <img
                 src={tour.image}
                 alt={tour.title}
-                className="w-full h-72 object-cover rounded-2xl"
+                className="w-full h-52 md:h-72 object-cover rounded-2xl"
               />
             ) : (
-              <div className="w-full h-72 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 flex items-center justify-center">
-                <span className="text-7xl">🌍</span>
+              <div className="w-full h-52 md:h-72 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 flex items-center justify-center">
+                <span className="text-6xl md:text-7xl">🌍</span>
               </div>
             )}
 
-            <div className="mt-6">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="mt-5 md:mt-6">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
                 <span className="rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 text-xs px-3 py-1">
                   {tour.category}
                 </span>
@@ -137,25 +123,27 @@ const TourDetail = () => {
                 </span>
               </div>
 
-              <h1 className="text-3xl font-bold mt-2">{tour.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold mt-2">{tour.title}</h1>
 
-              <div className="flex flex-wrap gap-4 mt-4 text-sm text-slate-400">
+              <div className="flex flex-wrap gap-3 md:gap-4 mt-4 text-xs md:text-sm text-slate-400">
                 <span>📍 {tour.location}</span>
                 <span>⏱ {tour.duration} days</span>
                 <span>👥 Max {tour.maxGroupSize} people</span>
                 <span>🎟 {tour.availableSlots} slots left</span>
               </div>
 
-              <p className="mt-6 text-slate-300 leading-relaxed">{tour.description}</p>
+              <p className="mt-5 md:mt-6 text-slate-300 leading-relaxed text-sm md:text-base">
+                {tour.description}
+              </p>
 
               {tour.itinerary && tour.itinerary.length > 0 && (
-                <div className="mt-8">
+                <div className="mt-6 md:mt-8">
                   <h2 className="text-lg font-semibold mb-4">Itinerary</h2>
                   <div className="space-y-3">
                     {tour.itinerary.map((item: string, index: number) => (
                       <div
                         key={index}
-                        className="flex gap-3 rounded-xl border border-white/10 bg-slate-900 p-4"
+                        className="flex gap-3 rounded-xl border border-white/10 bg-slate-900 p-3 md:p-4"
                       >
                         <span className="h-6 w-6 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-slate-950 text-xs font-bold">
                           {index + 1}
@@ -171,10 +159,12 @@ const TourDetail = () => {
 
           {/* Right: Booking card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-2xl border border-cyan-400/20 bg-slate-900 p-6 shadow-2xl">
-              <div className="flex items-baseline justify-between mb-6">
+            <div className="lg:sticky lg:top-24 rounded-2xl border border-cyan-400/20 bg-slate-900 p-5 md:p-6 shadow-2xl">
+              <div className="flex items-baseline justify-between mb-5 md:mb-6">
                 <div>
-                  <p className="text-3xl font-bold text-cyan-400">LKR {tour.price}</p>
+                  <p className="text-2xl md:text-3xl font-bold text-cyan-400">
+                    LKR {tour.price?.toLocaleString()}
+                  </p>
                   <p className="text-slate-400 text-xs">per person</p>
                 </div>
               </div>
@@ -197,9 +187,7 @@ const TourDetail = () => {
                 <>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">
-                        Travel Date
-                      </label>
+                      <label className="text-xs text-slate-400 mb-1 block">Travel Date</label>
                       <input
                         type="date"
                         value={bookingDate}
@@ -208,7 +196,6 @@ const TourDetail = () => {
                         className="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-sm outline-none focus:border-emerald-400 transition"
                       />
                     </div>
-
                     <div>
                       <label className="text-xs text-slate-400 mb-1 block">
                         Number of People
@@ -222,7 +209,6 @@ const TourDetail = () => {
                         className="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-sm outline-none focus:border-emerald-400 transition"
                       />
                     </div>
-
                     <div>
                       <label className="text-xs text-slate-400 mb-1 block">
                         Special Requests (optional)
@@ -237,12 +223,14 @@ const TourDetail = () => {
                     </div>
                   </div>
 
-                  <div className="mt-5 rounded-xl bg-slate-800 border border-white/10 p-4">
+                  <div className="mt-4 md:mt-5 rounded-xl bg-slate-800 border border-white/10 p-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-400">
-                        LKR {tour.price} × {numberOfPeople}
+                        LKR {tour.price?.toLocaleString()} × {numberOfPeople}
                       </span>
-                      <span className="font-semibold text-cyan-400">LKR {totalPrice}</span>
+                      <span className="font-semibold text-cyan-400">
+                        LKR {totalPrice?.toLocaleString()}
+                      </span>
                     </div>
                   </div>
 
@@ -255,7 +243,7 @@ const TourDetail = () => {
                   <button
                     onClick={handleBooking}
                     disabled={bookingLoading || !tour.isActive || tour.availableSlots === 0}
-                    className="mt-5 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 font-semibold text-slate-950 hover:opacity-90 transition disabled:opacity-50"
+                    className="mt-4 md:mt-5 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 font-semibold text-slate-950 hover:opacity-90 transition disabled:opacity-50"
                   >
                     {bookingLoading
                       ? "Booking..."
